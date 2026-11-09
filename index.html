@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Race VMG</title>
+</head>
+
+<body>
+  <h1>Race VMG</h1>
+
+  <p>VMG estimator for sailing races</p>
+
+  <label for="courseSelect">
+    Select course
+  </label>
+
+  <select id="courseSelect">
+    <option value="">Choose a course</option>
+  </select>
+
+  <br><br>
+
+  <label for="markSelect">
+    Active mark
+  </label>
+
+  <select id="markSelect" disabled>
+    <option value="">Select a course first</option>
+  </select>
+
+  <h2>Selected mark</h2>
+
+  <p id="markName">
+    No mark selected
+  </p>
+
+  <p>
+    Latitude:
+    <span id="markLatitude">--</span>
+  </p>
+
+  <p>
+    Longitude:
+    <span id="markLongitude">--</span>
+  </p>
+
+  <hr>
+
+  <button id="startButton" type="button">
+    Start GPS
+  </button>
+
+  <button id="stopButton" type="button" disabled>
+    Stop GPS
+  </button>
+
+  <h2>Phone GPS</h2>
+
+  <p>
+    Status:
+    <span id="gpsStatus">
+      GPS has not been started
+    </span>
+  </p>
+
+  <p>
+    Latitude:
+    <span id="phoneLatitude">--</span>
+  </p>
+
+  <p>
+    Longitude:
+    <span id="phoneLongitude">--</span>
+  </p>
+
+  <p>
+    Accuracy:
+    <span id="gpsAccuracy">--</span>
+  </p>
+
+  <p>
+    Speed over ground:
+    <span id="speedDisplay">--</span>
+  </p>
+
+  <p>
+    Course over ground:
+    <span id="courseDisplay">--</span>
+  </p>
+
+  <h2>VMG to mark</h2>
+
+  <p id="vmgDisplay">
+    Select a mark and start GPS
+  </p>
+
+  <script src="courses.js"></script>
+
+  <script>
+    const courseSelect =
+      document.getElementById("courseSelect");
+
+    const markSelect =
+      document.getElementById("markSelect");
+
+    const markName =
+      document.getElementById("markName");
+
+    const markLatitude =
+      document.getElementById("markLatitude");
+
+    const markLongitude =
+      document.getElementById("markLongitude");
+
+    const startButton =
+      document.getElementById("startButton");
+
+    const stopButton =
+      document.getElementById("stopButton");
+
+    const gpsStatus =
+      document.getElementById("gpsStatus");
+
+    const phoneLatitude =
+      document.getElementById("phoneLatitude");
+
+    const phoneLongitude =
+      document.getElementById("phoneLongitude");
+
+    const gpsAccuracy =
+      document.getElementById("gpsAccuracy");
+
+    const speedDisplay =
+      document.getElementById("speedDisplay");
+
+    const courseDisplay =
+      document.getElementById("courseDisplay");
+
+    const vmgDisplay =
+      document.getElementById("vmgDisplay");
+
+    let gpsWatchId = null;
+
+
+    function loadCourses() {
+      courses.forEach(function(course) {
+        const option =
+          document.createElement("option");
+
+        option.value = course.id;
+
+        option.textContent =
+          course.name +
+          " (" +
+          course.distanceNm +
+          " NM)";
+
+        courseSelect.appendChild(option);
+      });
+    }
+
+
+    function loadMarksForSelectedCourse() {
+      const selectedCourseId =
+        Number(courseSelect.value);
+
+      markSelect.innerHTML = "";
+
+      clearSelectedMark();
+
+      if (!selectedCourseId) {
+        const option =
+          document.createElement("option");
+
+        option.value = "";
+
+        option.textContent =
+          "Select a course first";
+
+        markSelect.appendChild(option);
+
+        markSelect.disabled = true;
+
+        return;
+      }
+
+      const selectedCourse =
+        courses.find(function(course) {
+          return course.id === selectedCourseId;
+        });
+
+      if (!selectedCourse) {
+        return;
+      }
+
+      markSelect.disabled = false;
+
+      const instruction =
+        document.createElement("option");
+
+      instruction.value = "";
+
+      instruction.textContent =
+        "Choose the active mark";
+
+      markSelect.appendChild(instruction);
+
+      selectedCourse.marks.forEach(
+        function(markId, index) {
+          const mark = marks[markId];
+
+          if (!mark) {
+            return;
+          }
+
+          const option =
+            document.createElement("option");
+
+          option.value = markId;
+
+          option.textContent =
+            (index + 1) +
+            ". " +
+            mark.name;
+
+          markSelect.appendChild(option);
+        }
+      );
+    }
+
+
+    function displaySelectedMark() {
+      const selectedMarkId =
+        markSelect.value;
+
+      if (!selectedMarkId) {
+        clearSelectedMark();
+        return;
+      }
+
+      const selectedMark =
+        marks[selectedMarkId];
+
+      if (!selectedMark) {
+        clearSelectedMark();
+        return;
+      }
+
+      markName.textContent =
+        selectedMark.name;
+
+      markLatitude.textContent =
+        selectedMark.latitude.toFixed(7);
+
+      markLongitude.textContent =
+        selectedMark.longitude.toFixed(7);
+    }
+
+
+    function clearSelectedMark() {
+      markName.textContent =
+        "No mark selected";
+
+      markLatitude.textContent = "--";
+      markLongitude.textContent = "--";
+    }
+
+
+    function startGps() {
+      if (!navigator.geolocation) {
+        gpsStatus.textContent =
+          "This browser does not support GPS";
+
+        return;
+      }
+
+      if (gpsWatchId !== null) {
+        return;
+      }
+
+      gpsStatus.textContent =
+        "Waiting for a GPS position...";
+
+      startButton.disabled = true;
+      stopButton.disabled = false;
+
+      gpsWatchId =
+        navigator.geolocation.watchPosition(
+          handleGpsPosition,
+          handleGpsError,
+          {
+            enableHighAccuracy: true,
+            maximumAge: 1000,
+            timeout: 15000
+          }
+        );
+    }
+
+
+    function handleGpsPosition(position) {
+      const coordinates = position.coords;
+
+      phoneLatitude.textContent =
+        coordinates.latitude.toFixed(7);
+
+      phoneLongitude.textContent =
+        coordinates.longitude.toFixed(7);
+
+      gpsAccuracy.textContent =
+        coordinates.accuracy.toFixed(1) +
+        " metres";
+
+      if (
+        coordinates.speed !== null &&
+        coordinates.speed >= 0
+      ) {
+        const speedKnots =
+          coordinates.speed * 1.943844;
+
+        speedDisplay.textContent =
+          speedKnots.toFixed(2) +
+          " knots";
+      } else {
+        speedDisplay.textContent =
+          "Not available";
+      }
+
+      if (
+        coordinates.heading !== null &&
+        !Number.isNaN(coordinates.heading)
+      ) {
+        courseDisplay.textContent =
+          coordinates.heading.toFixed(0) +
+          "°";
+      } else {
+        courseDisplay.textContent =
+          "Move with the phone to obtain course";
+      }
+
+      if (coordinates.accuracy <= 15) {
+        gpsStatus.textContent =
+          "GPS active - good accuracy";
+      } else if (coordinates.accuracy <= 25) {
+        gpsStatus.textContent =
+          "GPS active - moderate accuracy";
+      } else {
+        gpsStatus.textContent =
+          "GPS active - poor accuracy";
+      }
+
+      vmgDisplay.textContent =
+        "GPS connected - VMG calculation is next";
+    }
+
+
+    function handleGpsError(error) {
+      let message =
+        "Unable to obtain GPS position";
+
+      if (error.code === 1) {
+        message =
+          "Location permission was denied";
+      }
+
+      if (error.code === 2) {
+        message =
+          "GPS position is unavailable";
+      }
+
+      if (error.code === 3) {
+        message =
+          "GPS request timed out";
+      }
+
+      gpsStatus.textContent = message;
+
+      startButton.disabled = false;
+      stopButton.disabled = true;
+
+      gpsWatchId = null;
+    }
+
+
+    function stopGps() {
+      if (gpsWatchId !== null) {
+        navigator.geolocation.clearWatch(
+          gpsWatchId
+        );
+
+        gpsWatchId = null;
+      }
+
+      gpsStatus.textContent =
+        "GPS stopped";
+
+      startButton.disabled = false;
+      stopButton.disabled = true;
+    }
+
+
+    courseSelect.addEventListener(
+      "change",
+      loadMarksForSelectedCourse
+    );
+
+    markSelect.addEventListener(
+      "change",
+      displaySelectedMark
+    );
+
+    startButton.addEventListener(
+      "click",
+      startGps
+    );
+
+    stopButton.addEventListener(
+      "click",
+      stopGps
+    );
+
+    loadCourses();
+  </script>
+</body>
+</html>
