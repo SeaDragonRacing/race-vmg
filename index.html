@@ -9,12 +9,119 @@
   >
 
   <title>Race VMG</title>
+
+  <style>
+    body {
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #07141f;
+      color: white;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      color: #5ed7ff;
+    }
+
+    h2 {
+      margin-top: 28px;
+      margin-bottom: 10px;
+      color: #b8eaff;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    select,
+    button {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 52px;
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+    }
+
+    select {
+      background-color: white;
+      color: black;
+    }
+
+    button {
+      margin-top: 12px;
+      border: none;
+      background-color: #087da8;
+      color: white;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      background-color: #53636b;
+      color: #bac4c8;
+    }
+
+    .panel {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid #376071;
+      border-radius: 10px;
+      background-color: #102633;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 10px 0;
+    }
+
+    .data-label {
+      color: #c6d7de;
+    }
+
+    .data-value {
+      text-align: right;
+      font-weight: bold;
+    }
+
+    #vmgDisplay {
+      margin: 10px 0;
+      color: #77ffac;
+      font-size: 44px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #gpsStatus {
+      font-weight: bold;
+    }
+
+    .warning {
+      color: #ffd166;
+    }
+
+    .negative {
+      color: #ff7373 !important;
+    }
+
+    .positive {
+      color: #77ffac !important;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Race VMG</h1>
 
-  <p>VMG estimator for sailing races</p>
+  <p>
+    VMG estimator for sailing races
+  </p>
 
   <label for="courseSelect">
     Select course
@@ -24,8 +131,6 @@
     <option value="">Choose a course</option>
   </select>
 
-  <br><br>
-
   <label for="markSelect">
     Active mark
   </label>
@@ -34,23 +139,30 @@
     <option value="">Select a course first</option>
   </select>
 
-  <h2>Selected mark</h2>
+  <section class="panel">
+    <h2>Selected mark</h2>
 
-  <p id="markName">
-    No mark selected
-  </p>
+    <div class="data-row">
+      <span class="data-label">Name</span>
+      <span class="data-value" id="markName">
+        No mark selected
+      </span>
+    </div>
 
-  <p>
-    Latitude:
-    <span id="markLatitude">--</span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Latitude</span>
+      <span class="data-value" id="markLatitude">
+        --
+      </span>
+    </div>
 
-  <p>
-    Longitude:
-    <span id="markLongitude">--</span>
-  </p>
-
-  <hr>
+    <div class="data-row">
+      <span class="data-label">Longitude</span>
+      <span class="data-value" id="markLongitude">
+        --
+      </span>
+    </div>
+  </section>
 
   <button id="startButton" type="button">
     Start GPS
@@ -60,45 +172,86 @@
     Stop GPS
   </button>
 
-  <h2>Phone GPS</h2>
+  <section class="panel">
+    <h2>Phone GPS</h2>
 
-  <p>
-    Status:
-    <span id="gpsStatus">
-      GPS has not been started
-    </span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Status</span>
+      <span class="data-value" id="gpsStatus">
+        GPS has not been started
+      </span>
+    </div>
 
-  <p>
-    Latitude:
-    <span id="phoneLatitude">--</span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Latitude</span>
+      <span class="data-value" id="phoneLatitude">
+        --
+      </span>
+    </div>
 
-  <p>
-    Longitude:
-    <span id="phoneLongitude">--</span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Longitude</span>
+      <span class="data-value" id="phoneLongitude">
+        --
+      </span>
+    </div>
 
-  <p>
-    Accuracy:
-    <span id="gpsAccuracy">--</span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Accuracy</span>
+      <span class="data-value" id="gpsAccuracy">
+        --
+      </span>
+    </div>
 
-  <p>
-    Speed over ground:
-    <span id="speedDisplay">--</span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Speed over ground</span>
+      <span class="data-value" id="speedDisplay">
+        --
+      </span>
+    </div>
 
-  <p>
-    Course over ground:
-    <span id="courseDisplay">--</span>
-  </p>
+    <div class="data-row">
+      <span class="data-label">Course over ground</span>
+      <span class="data-value" id="courseDisplay">
+        --
+      </span>
+    </div>
+  </section>
 
-  <h2>VMG to mark</h2>
+  <section class="panel">
+    <h2>Progress to mark</h2>
 
-  <p id="vmgDisplay">
-    Select a mark and start GPS
-  </p>
+    <div class="data-row">
+      <span class="data-label">Bearing to mark</span>
+      <span class="data-value" id="bearingDisplay">
+        --
+      </span>
+    </div>
+
+    <div class="data-row">
+      <span class="data-label">Distance to mark</span>
+      <span class="data-value" id="distanceDisplay">
+        --
+      </span>
+    </div>
+
+    <div class="data-row">
+      <span class="data-label">Course offset</span>
+      <span class="data-value" id="offsetDisplay">
+        --
+      </span>
+    </div>
+
+    <h2>VMG to mark</h2>
+
+    <p id="vmgDisplay">
+      --
+    </p>
+
+    <p id="vmgMessage">
+      Select a mark and start GPS
+    </p>
+  </section>
 
   <script src="courses.js"></script>
 
@@ -142,10 +295,23 @@
     const courseDisplay =
       document.getElementById("courseDisplay");
 
+    const bearingDisplay =
+      document.getElementById("bearingDisplay");
+
+    const distanceDisplay =
+      document.getElementById("distanceDisplay");
+
+    const offsetDisplay =
+      document.getElementById("offsetDisplay");
+
     const vmgDisplay =
       document.getElementById("vmgDisplay");
 
+    const vmgMessage =
+      document.getElementById("vmgMessage");
+
     let gpsWatchId = null;
+    let lastGpsPosition = null;
 
 
     function loadCourses() {
@@ -179,12 +345,10 @@
           document.createElement("option");
 
         option.value = "";
-
         option.textContent =
           "Select a course first";
 
         markSelect.appendChild(option);
-
         markSelect.disabled = true;
 
         return;
@@ -205,7 +369,6 @@
         document.createElement("option");
 
       instruction.value = "";
-
       instruction.textContent =
         "Choose the active mark";
 
@@ -255,11 +418,34 @@
       markName.textContent =
         selectedMark.name;
 
+      if (
+        selectedMark.latitude === null ||
+        selectedMark.longitude === null
+      ) {
+        markLatitude.textContent =
+          "Unavailable";
+
+        markLongitude.textContent =
+          "Unavailable";
+
+        vmgMessage.textContent =
+          "This mark does not have coordinates";
+
+        return;
+      }
+
       markLatitude.textContent =
         selectedMark.latitude.toFixed(7);
 
       markLongitude.textContent =
         selectedMark.longitude.toFixed(7);
+
+      if (lastGpsPosition !== null) {
+        updateNavigation(lastGpsPosition);
+      } else {
+        vmgMessage.textContent =
+          "Start GPS to calculate VMG";
+      }
     }
 
 
@@ -269,6 +455,321 @@
 
       markLatitude.textContent = "--";
       markLongitude.textContent = "--";
+
+      bearingDisplay.textContent = "--";
+      distanceDisplay.textContent = "--";
+      offsetDisplay.textContent = "--";
+      vmgDisplay.textContent = "--";
+
+      vmgDisplay.classList.remove(
+        "positive",
+        "negative"
+      );
+
+      vmgMessage.textContent =
+        "Select a mark and start GPS";
+    }
+
+
+    function degreesToRadians(degrees) {
+      return degrees * Math.PI / 180;
+    }
+
+
+    function radiansToDegrees(radians) {
+      return radians * 180 / Math.PI;
+    }
+
+
+    function calculateDistanceNm(
+      latitude1,
+      longitude1,
+      latitude2,
+      longitude2
+    ) {
+      const earthRadiusNm = 3440.065;
+
+      const latitudeDifference =
+        degreesToRadians(
+          latitude2 - latitude1
+        );
+
+      const longitudeDifference =
+        degreesToRadians(
+          longitude2 - longitude1
+        );
+
+      const latitude1Radians =
+        degreesToRadians(latitude1);
+
+      const latitude2Radians =
+        degreesToRadians(latitude2);
+
+      const a =
+        Math.sin(
+          latitudeDifference / 2
+        ) ** 2 +
+        Math.cos(latitude1Radians) *
+        Math.cos(latitude2Radians) *
+        Math.sin(
+          longitudeDifference / 2
+        ) ** 2;
+
+      const angularDistance =
+        2 *
+        Math.atan2(
+          Math.sqrt(a),
+          Math.sqrt(1 - a)
+        );
+
+      return earthRadiusNm * angularDistance;
+    }
+
+
+    function calculateBearing(
+      latitude1,
+      longitude1,
+      latitude2,
+      longitude2
+    ) {
+      const latitude1Radians =
+        degreesToRadians(latitude1);
+
+      const latitude2Radians =
+        degreesToRadians(latitude2);
+
+      const longitudeDifference =
+        degreesToRadians(
+          longitude2 - longitude1
+        );
+
+      const y =
+        Math.sin(longitudeDifference) *
+        Math.cos(latitude2Radians);
+
+      const x =
+        Math.cos(latitude1Radians) *
+        Math.sin(latitude2Radians) -
+        Math.sin(latitude1Radians) *
+        Math.cos(latitude2Radians) *
+        Math.cos(longitudeDifference);
+
+      const bearing =
+        radiansToDegrees(
+          Math.atan2(y, x)
+        );
+
+      return (bearing + 360) % 360;
+    }
+
+
+    function calculateAngleDifference(
+      course,
+      bearing
+    ) {
+      return (
+        (course - bearing + 540) %
+        360
+      ) - 180;
+    }
+
+
+    function deriveMovementFromPositions(
+      previousPosition,
+      currentPosition
+    ) {
+      if (!previousPosition) {
+        return null;
+      }
+
+      const elapsedSeconds =
+        (
+          currentPosition.timestamp -
+          previousPosition.timestamp
+        ) / 1000;
+
+      if (
+        elapsedSeconds <= 0 ||
+        elapsedSeconds > 30
+      ) {
+        return null;
+      }
+
+      const previous =
+        previousPosition.coords;
+
+      const current =
+        currentPosition.coords;
+
+      const distanceNm =
+        calculateDistanceNm(
+          previous.latitude,
+          previous.longitude,
+          current.latitude,
+          current.longitude
+        );
+
+      const speedKnots =
+        distanceNm /
+        (elapsedSeconds / 3600);
+
+      if (
+        distanceNm < 0.002 ||
+        speedKnots > 40
+      ) {
+        return null;
+      }
+
+      const course =
+        calculateBearing(
+          previous.latitude,
+          previous.longitude,
+          current.latitude,
+          current.longitude
+        );
+
+      return {
+        speedKnots: speedKnots,
+        course: course
+      };
+    }
+
+
+    function updateNavigation(
+      position,
+      movement
+    ) {
+      const selectedMarkId =
+        markSelect.value;
+
+      if (!selectedMarkId) {
+        bearingDisplay.textContent = "--";
+        distanceDisplay.textContent = "--";
+        offsetDisplay.textContent = "--";
+        vmgDisplay.textContent = "--";
+
+        vmgMessage.textContent =
+          "Select an active mark";
+
+        return;
+      }
+
+      const selectedMark =
+        marks[selectedMarkId];
+
+      if (
+        !selectedMark ||
+        selectedMark.latitude === null ||
+        selectedMark.longitude === null
+      ) {
+        vmgMessage.textContent =
+          "Coordinates unavailable";
+
+        return;
+      }
+
+      const coordinates =
+        position.coords;
+
+      const bearing =
+        calculateBearing(
+          coordinates.latitude,
+          coordinates.longitude,
+          selectedMark.latitude,
+          selectedMark.longitude
+        );
+
+      const distance =
+        calculateDistanceNm(
+          coordinates.latitude,
+          coordinates.longitude,
+          selectedMark.latitude,
+          selectedMark.longitude
+        );
+
+      bearingDisplay.textContent =
+        bearing.toFixed(0) + "°";
+
+      if (distance < 1) {
+        distanceDisplay.textContent =
+          distance.toFixed(3) + " NM";
+      } else {
+        distanceDisplay.textContent =
+          distance.toFixed(2) + " NM";
+      }
+
+      if (!movement) {
+        offsetDisplay.textContent =
+          "Waiting for movement";
+
+        vmgDisplay.textContent = "--";
+
+        vmgMessage.textContent =
+          "Move with the phone to calculate VMG";
+
+        return;
+      }
+
+      const angleDifference =
+        calculateAngleDifference(
+          movement.course,
+          bearing
+        );
+
+      const vmg =
+        movement.speedKnots *
+        Math.cos(
+          degreesToRadians(
+            angleDifference
+          )
+        );
+
+      let side = "on bearing";
+
+      if (Math.abs(angleDifference) >= 1) {
+        side =
+          angleDifference < 0
+            ? "port"
+            : "starboard";
+      }
+
+      offsetDisplay.textContent =
+        Math.abs(
+          angleDifference
+        ).toFixed(0) +
+        "° " +
+        side;
+
+      vmgDisplay.textContent =
+        vmg.toFixed(2) + " kn";
+
+      vmgDisplay.classList.remove(
+        "positive",
+        "negative"
+      );
+
+      if (vmg >= 0) {
+        vmgDisplay.classList.add(
+          "positive"
+        );
+      } else {
+        vmgDisplay.classList.add(
+          "negative"
+        );
+      }
+
+      if (vmg < 0) {
+        vmgMessage.textContent =
+          "Moving away from the mark";
+      } else if (
+        Math.abs(angleDifference) > 75
+      ) {
+        vmgMessage.textContent =
+          "Most speed is across the course to the mark";
+      } else {
+        vmgMessage.textContent =
+          "Closing on the selected mark";
+      }
     }
 
 
@@ -304,7 +805,8 @@
 
 
     function handleGpsPosition(position) {
-      const coordinates = position.coords;
+      const coordinates =
+        position.coords;
 
       phoneLatitude.textContent =
         coordinates.latitude.toFixed(7);
@@ -316,46 +818,76 @@
         coordinates.accuracy.toFixed(1) +
         " metres";
 
+      let movement = null;
+
       if (
         coordinates.speed !== null &&
-        coordinates.speed >= 0
-      ) {
-        const speedKnots =
-          coordinates.speed * 1.943844;
-
-        speedDisplay.textContent =
-          speedKnots.toFixed(2) +
-          " knots";
-      } else {
-        speedDisplay.textContent =
-          "Not available";
-      }
-
-      if (
+        coordinates.speed >= 0 &&
         coordinates.heading !== null &&
         !Number.isNaN(coordinates.heading)
       ) {
+        movement = {
+          speedKnots:
+            coordinates.speed * 1.943844,
+
+          course:
+            coordinates.heading
+        };
+      } else {
+        movement =
+          deriveMovementFromPositions(
+            lastGpsPosition,
+            position
+          );
+      }
+
+      if (movement) {
+        speedDisplay.textContent =
+          movement.speedKnots.toFixed(2) +
+          " kn";
+
         courseDisplay.textContent =
-          coordinates.heading.toFixed(0) +
+          movement.course.toFixed(0) +
           "°";
       } else {
+        speedDisplay.textContent =
+          "Waiting for movement";
+
         courseDisplay.textContent =
-          "Move with the phone to obtain course";
+          "Waiting for movement";
       }
 
       if (coordinates.accuracy <= 15) {
         gpsStatus.textContent =
-          "GPS active - good accuracy";
-      } else if (coordinates.accuracy <= 25) {
+          "GPS active, good accuracy";
+
+        gpsStatus.classList.remove(
+          "warning"
+        );
+      } else if (
+        coordinates.accuracy <= 25
+      ) {
         gpsStatus.textContent =
-          "GPS active - moderate accuracy";
+          "GPS active, moderate accuracy";
+
+        gpsStatus.classList.add(
+          "warning"
+        );
       } else {
         gpsStatus.textContent =
-          "GPS active - poor accuracy";
+          "GPS active, poor accuracy";
+
+        gpsStatus.classList.add(
+          "warning"
+        );
       }
 
-      vmgDisplay.textContent =
-        "GPS connected - VMG calculation is next";
+      updateNavigation(
+        position,
+        movement
+      );
+
+      lastGpsPosition = position;
     }
 
 
@@ -379,6 +911,7 @@
       }
 
       gpsStatus.textContent = message;
+      gpsStatus.classList.add("warning");
 
       startButton.disabled = false;
       stopButton.disabled = true;
@@ -399,8 +932,14 @@
       gpsStatus.textContent =
         "GPS stopped";
 
+      gpsStatus.classList.remove(
+        "warning"
+      );
+
       startButton.disabled = false;
       stopButton.disabled = true;
+
+      lastGpsPosition = null;
     }
 
 
