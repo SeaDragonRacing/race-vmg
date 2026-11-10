@@ -1040,5 +1040,22 @@
 
     loadCourses();
   </script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+      navigator.serviceWorker
+        .register("./sw.js")
+        .then(function() {
+          console.log("Race VMG offline mode ready");
+        })
+        .catch(function(error) {
+          console.error(
+            "Offline mode could not start:",
+            error
+          );
+        });
+    });
+  }
+</script>
 </body>
 </html>
