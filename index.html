@@ -90,6 +90,28 @@
       text-align: center;
     }
 
+    .rounding-side {
+      display: none;
+      margin: 9px 0 0;
+      padding: 9px;
+      border-radius: 7px;
+      background: #ffd166;
+      color: #16232a;
+      font-size: 23px;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .course-note {
+      display: none;
+      margin: 8px 0 0;
+      color: #ffd166;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+
     .vmg-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -182,6 +204,10 @@
       .data-value {
         font-size: 16px;
       }
+
+      .rounding-side {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -213,6 +239,10 @@
     <p class="mark-name" id="markName">
       No mark selected
     </p>
+
+    <p class="rounding-side" id="roundingSide"></p>
+
+    <p class="course-note" id="courseNote"></p>
   </section>
 
   <div class="button-row">
@@ -311,6 +341,12 @@
     const markName =
       document.getElementById("markName");
 
+    const roundingSide =
+      document.getElementById("roundingSide");
+
+    const courseNote =
+      document.getElementById("courseNote");
+
     const startButton =
       document.getElementById("startButton");
 
@@ -354,6 +390,46 @@
     const rollingWindowSeconds = 15;
 
 
+    function getSelectedCourse() {
+      const selectedCourseId =
+        Number(courseSelect.value);
+
+      if (!selectedCourseId) {
+        return null;
+      }
+
+      return courses.find(function(course) {
+        return course.id === selectedCourseId;
+      }) || null;
+    }
+
+
+    function getSelectedWaypoint() {
+      const selectedCourse =
+        getSelectedCourse();
+
+      if (
+        !selectedCourse ||
+        markSelect.value === ""
+      ) {
+        return null;
+      }
+
+      const waypointIndex =
+        Number(markSelect.value);
+
+      if (
+        !Number.isInteger(waypointIndex) ||
+        waypointIndex < 0 ||
+        waypointIndex >= selectedCourse.marks.length
+      ) {
+        return null;
+      }
+
+      return selectedCourse.marks[waypointIndex];
+    }
+
+
     function loadCourses() {
       courses.forEach(function(course) {
         const option =
@@ -373,18 +449,19 @@
 
 
     function loadMarksForSelectedCourse() {
-      const selectedCourseId =
-        Number(courseSelect.value);
+      const selectedCourse =
+        getSelectedCourse();
 
       markSelect.innerHTML = "";
 
       resetNavigationDisplay();
 
-      if (!selectedCourseId) {
+      if (!selectedCourse) {
         const option =
           document.createElement("option");
 
         option.value = "";
+
         option.textContent =
           "Select a course first";
 
@@ -394,29 +471,22 @@
         return;
       }
 
-      const selectedCourse =
-        courses.find(function(course) {
-          return course.id === selectedCourseId;
-        });
-
-      if (!selectedCourse) {
-        return;
-      }
-
       markSelect.disabled = false;
 
       const instruction =
         document.createElement("option");
 
       instruction.value = "";
+
       instruction.textContent =
         "Choose the active mark";
 
       markSelect.appendChild(instruction);
 
       selectedCourse.marks.forEach(
-        function(markId, index) {
-          const mark = marks[markId];
+        function(waypoint, index) {
+          const mark =
+            marks[waypoint.id];
 
           if (!mark) {
             return;
@@ -425,31 +495,75 @@
           const option =
             document.createElement("option");
 
-          option.value = markId;
+          /*
+            Use the waypoint index as the value.
+            The same physical mark can appear more
+            than once with a different rounding side.
+          */
+          option.value = index;
 
           option.textContent =
             (index + 1) +
             ". " +
-            mark.name;
+            mark.name +
+            " - " +
+            waypoint.side.toUpperCase();
 
           markSelect.appendChild(option);
         }
       );
+
+      if (selectedCourse.note) {
+        courseNote.textContent =
+          selectedCourse.note;
+
+        courseNote.style.display =
+          "block";
+      }
     }
 
 
     function displaySelectedMark() {
       distanceHistory = [];
 
-      const markId = markSelect.value;
+      const waypoint =
+        getSelectedWaypoint();
 
-      if (!markId || !marks[markId]) {
+      if (
+        !waypoint ||
+        !marks[waypoint.id]
+      ) {
         resetNavigationDisplay();
         return;
       }
 
       markName.textContent =
-        marks[markId].name;
+        marks[waypoint.id].name;
+
+      roundingSide.textContent =
+        "LEAVE TO " +
+        waypoint.side.toUpperCase();
+
+      roundingSide.style.display =
+        "block";
+
+      const selectedCourse =
+        getSelectedCourse();
+
+      if (
+        selectedCourse &&
+        selectedCourse.note
+      ) {
+        courseNote.textContent =
+          selectedCourse.note;
+
+        courseNote.style.display =
+          "block";
+      } else {
+        courseNote.textContent = "";
+        courseNote.style.display =
+          "none";
+      }
 
       instantVmgDisplay.textContent = "--";
       rollingVmgDisplay.textContent = "--";
@@ -472,6 +586,14 @@
     function resetNavigationDisplay() {
       markName.textContent =
         "No mark selected";
+
+      roundingSide.textContent = "";
+      roundingSide.style.display =
+        "none";
+
+      courseNote.textContent = "";
+      courseNote.style.display =
+        "none";
 
       instantVmgDisplay.textContent = "--";
       rollingVmgDisplay.textContent = "--";
@@ -786,10 +908,13 @@
       position,
       movement
     ) {
-      const markId =
-        markSelect.value;
+      const waypoint =
+        getSelectedWaypoint();
 
-      if (!markId || !marks[markId]) {
+      if (
+        !waypoint ||
+        !marks[waypoint.id]
+      ) {
         vmgMessage.textContent =
           "Select an active mark";
 
@@ -797,7 +922,7 @@
       }
 
       const selectedMark =
-        marks[markId];
+        marks[waypoint.id];
 
       const coordinates =
         position.coords;
@@ -1040,22 +1165,28 @@
 
     loadCourses();
   </script>
+
   <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function() {
-      navigator.serviceWorker
-        .register("./sw.js")
-        .then(function() {
-          console.log("Race VMG offline mode ready");
-        })
-        .catch(function(error) {
-          console.error(
-            "Offline mode could not start:",
-            error
-          );
-        });
-    });
-  }
-</script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener(
+        "load",
+        function() {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then(function() {
+              console.log(
+                "Race VMG offline mode ready"
+              );
+            })
+            .catch(function(error) {
+              console.error(
+                "Offline mode could not start:",
+                error
+              );
+            });
+        }
+      );
+    }
+  </script>
 </body>
 </html>
