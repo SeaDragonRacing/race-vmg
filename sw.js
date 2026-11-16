@@ -1,4 +1,4 @@
-const CACHE_NAME = "race-vmg-v1";
+const CACHE_NAME = "race-vmg-v2";
 
 const APP_FILES = [
   "./",
