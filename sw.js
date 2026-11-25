@@ -1,4 +1,4 @@
-const CACHE_NAME = "race-vmg-v3";
+const CACHE_NAME = "race-vmg-v4";
 const APP_FILES = [
   "./",
   "./index.html",
