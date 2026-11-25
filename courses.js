@@ -7,8 +7,9 @@
   Longitude:
   - East is positive
 
-  Marks with null coordinates still need a representative
-  target point before VMG can be calculated.
+  Each course mark has:
+  - id:   the mark code from the marks list
+  - side: "port" or "starboard" (the side the mark is left on)
 */
 
 const marks = {
@@ -211,10 +212,7 @@ const courses = [
     name: "Course 1",
     distanceNm: 8.4,
     marks: [
-      {
-        id: "NLYB",
-        side: "starboard"
-      }
+      { id: "NLYB", side: "starboard" }
     ]
   },
 
@@ -223,18 +221,9 @@ const courses = [
     name: "Course 2",
     distanceNm: 9.5,
     marks: [
-      {
-        id: "MOTY",
-        side: "starboard"
-      },
-      {
-        id: "ILIO",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "port"
-      }
+      { id: "MOTY", side: "starboard" },
+      { id: "ILIO", side: "starboard" },
+      { id: "MOTY", side: "port" }
     ]
   },
 
@@ -243,18 +232,9 @@ const courses = [
     name: "Course 3",
     distanceNm: 12.7,
     marks: [
-      {
-        id: "MOTY",
-        side: "starboard"
-      },
-      {
-        id: "MOTG",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "port"
-      }
+      { id: "MOTY", side: "starboard" },
+      { id: "MOTG", side: "starboard" },
+      { id: "MOTY", side: "port" }
     ]
   },
 
@@ -263,10 +243,7 @@ const courses = [
     name: "Course 4",
     distanceNm: 6.0,
     marks: [
-      {
-        id: "MOTY",
-        side: "starboard"
-      }
+      { id: "MOTY", side: "starboard" }
     ]
   },
 
@@ -275,18 +252,9 @@ const courses = [
     name: "Course 5",
     distanceNm: 10.5,
     marks: [
-      {
-        id: "MOTY",
-        side: "port"
-      },
-      {
-        id: "FLAX",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "starboard"
-      }
+      { id: "MOTY", side: "port" },
+      { id: "FLAX", side: "starboard" },
+      { id: "MOTY", side: "starboard" }
     ]
   },
 
@@ -296,18 +264,9 @@ const courses = [
     distanceNm: 12.6,
     note: "Observe all fairway marks",
     marks: [
-      {
-        id: "BROWN",
-        side: "port"
-      },
-      {
-        id: "MOTG",
-        side: "port"
-      },
-      {
-        id: "MOTY",
-        side: "port"
-      }
+      { id: "BROWN", side: "port" },
+      { id: "MOTG", side: "port" },
+      { id: "MOTY", side: "port" }
     ]
   },
 
@@ -316,30 +275,12 @@ const courses = [
     name: "Course 7",
     distanceNm: 10.3,
     marks: [
-      {
-        id: "NLYB",
-        side: "port"
-      },
-      {
-        id: "DORIS",
-        side: "port"
-      },
-      {
-        id: "BRLIGHT",
-        side: "port"
-      },
-      {
-        id: "BRR",
-        side: "starboard"
-      },
-      {
-        id: "NLYB",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "starboard"
-      }
+      { id: "NLYB", side: "port" },
+      { id: "DORIS", side: "port" },
+      { id: "BRLIGHT", side: "port" },
+      { id: "BRR", side: "starboard" },
+      { id: "NLYB", side: "starboard" },
+      { id: "MOTY", side: "starboard" }
     ]
   },
 
@@ -349,18 +290,9 @@ const courses = [
     distanceNm: 10.5,
     note: "Observe all fairway marks",
     marks: [
-      {
-        id: "BROWN",
-        side: "port"
-      },
-      {
-        id: "NAVY",
-        side: "port"
-      },
-      {
-        id: "RANG",
-        side: "port"
-      }
+      { id: "BROWN", side: "port" },
+      { id: "NAVY", side: "port" },
+      { id: "RANG", side: "port" }
     ]
   },
 
@@ -369,18 +301,9 @@ const courses = [
     name: "Course 9",
     distanceNm: 10.5,
     marks: [
-      {
-        id: "RANG",
-        side: "starboard"
-      },
-      {
-        id: "ILIO",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "port"
-      }
+      { id: "RANG", side: "starboard" },
+      { id: "ILIO", side: "starboard" },
+      { id: "MOTY", side: "port" }
     ]
   },
 
@@ -389,22 +312,10 @@ const courses = [
     name: "Course 10",
     distanceNm: 11.0,
     marks: [
-      {
-        id: "NLYB",
-        side: "starboard"
-      },
-      {
-        id: "RANG",
-        side: "starboard"
-      },
-      {
-        id: "ILIO",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "port"
-      }
+      { id: "NLYB", side: "starboard" },
+      { id: "RANG", side: "starboard" },
+      { id: "ILIO", side: "starboard" },
+      { id: "MOTY", side: "port" }
     ]
   },
 
@@ -413,26 +324,11 @@ const courses = [
     name: "Course 11",
     distanceNm: 10.5,
     marks: [
-      {
-        id: "MOTY",
-        side: "starboard"
-      },
-      {
-        id: "ILIO",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "starboard"
-      },
-      {
-        id: "ILIO",
-        side: "starboard"
-      },
-      {
-        id: "MOTY",
-        side: "port"
-      }
+      { id: "MOTY", side: "starboard" },
+      { id: "ILIO", side: "starboard" },
+      { id: "MOTY", side: "starboard" },
+      { id: "ILIO", side: "starboard" },
+      { id: "MOTY", side: "port" }
     ]
   }
 ];
